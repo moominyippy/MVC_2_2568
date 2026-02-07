@@ -23,7 +23,7 @@ python init_data.py
 python app.py
 ```
 
-จากนั้นเปิดเบราว์เซอร์ไปที่ `http://localhost:5000`
+
 
 ## โครงสร้างโปรเจกต์
 
