@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}รายละเอียดคำสัญญา - ระบบติดตามคำสัญญานักการเมือง{% endblock %}
+
+{% block header %}รายละเอียดคำสัญญา{% endblock %}
+
+{% block content %}
+{% if promise %}
+<div class="promise-card">
+    <h2 style="color: #333; margin-bottom: 15px;">รหัสคำสัญญา: {{ promise.promise_id }}</h2>
+    
+    <div style="margin-bottom: 15px;">
+        <strong>นักการเมือง:</strong> 
+        {% if politician %}
+            {{ politician.name }} ({{ politician.party }})
+        {% else %}
+            ไม่พบข้อมูล
+        {% endif %}
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <strong>วันที่ประกาศ:</strong> {{ promise.announcement_date }}
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <strong>สถานะ:</strong> 
+        <span class="status-badge 
+            {% if promise.status == 'ยังไม่เริ่ม' %}status-not-started
+            {% elif promise.status == 'กำลังดำเนินการ' %}status-in-progress
+            {% else %}status-silent{% endif %}">
+            {{ promise.status }}
+        </span>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <strong>รายละเอียดคำสัญญา:</strong>
+        <p style="margin-top: 10px; line-height: 1.6;">{{ promise.description }}</p>
+    </div>
+    
+    {% if session.get('role') == 'admin' and promise.can_update() %}
+    <a href="/promises/{{ promise.promise_id }}/update" class="btn">อัปเดตความคืบหน้า</a>
+    {% elif session.get('role') == 'admin' and not promise.can_update() %}
+    <p style="color: #dc3545; font-weight: bold;">คำสัญญานี้มีสถานะ 'เงียบหาย' ไม่สามารถอัปเดตได้</p>
+    {% endif %}
+</div>
+
+<h3>ประวัติการอัปเดต</h3>
+
+{% if updates %}
+    {% for update in updates %}
+    <div class="update-item">
+        <div class="update-date">วันที่อัปเดต: {{ update.update_date }}</div>
+        <div style="margin-top: 10px;">{{ update.progress_details }}</div>
+    </div>
+    {% endfor %}
+{% else %}
+    <p style="text-align: center; color: #666; padding: 20px;">ยังไม่มีการอัปเดตความคืบหน้า</p>
+{% endif %}
+
+<div style="margin-top: 30px;">
+    <a href="/promises" class="btn">กลับไปหน้ารวมคำสัญญา</a>
+</div>
+{% else %}
+<div class="alert alert-error">
+    ไม่พบคำสัญญาที่ต้องการ
+</div>
+<a href="/promises" class="btn">กลับไปหน้ารวมคำสัญญา</a>
+{% endif %}
+{% endblock %}
+

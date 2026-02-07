@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}อัปเดตความคืบหน้า - ระบบติดตามคำสัญญานักการเมือง{% endblock %}
+
+{% block header %}อัปเดตความคืบหน้า{% endblock %}
+
+{% block content %}
+{% if session.get('role') != 'admin' %}
+<div class="alert alert-error">
+    คุณไม่มีสิทธิ์เข้าถึงหน้านี้
+</div>
+<a href="/promises" class="btn">กลับไปหน้ารวมคำสัญญา</a>
+{% elif promise %}
+<div class="promise-card">
+    <h3 style="color: #667eea; margin-bottom: 15px;">คำสัญญา: {{ promise.promise_id }}</h3>
+    <p><strong>รายละเอียด:</strong> {{ promise.description }}</p>
+    <p><strong>สถานะปัจจุบัน:</strong> 
+        <span class="status-badge 
+            {% if promise.status == 'ยังไม่เริ่ม' %}status-not-started
+            {% elif promise.status == 'กำลังดำเนินการ' %}status-in-progress
+            {% else %}status-silent{% endif %}">
+            {{ promise.status }}
+        </span>
+    </p>
+</div>
+
+<form method="POST" action="/promises/{{ promise.promise_id }}/update">
+    <div class="form-group">
+        <label for="progress_details">รายละเอียดความคืบหน้า:</label>
+        <textarea id="progress_details" name="progress_details" required placeholder="กรุณากรอกรายละเอียดความคืบหน้าของคำสัญญา..."></textarea>
+    </div>
+    
+    <button type="submit" class="btn">บันทึกการอัปเดต</button>
+    <a href="/promises/{{ promise.promise_id }}" class="btn" style="background: #6c757d; margin-left: 10px;">ยกเลิก</a>
+</form>
+{% else %}
+<div class="alert alert-error">
+    ไม่พบคำสัญญาที่ต้องการ
+</div>
+<a href="/promises" class="btn">กลับไปหน้ารวมคำสัญญา</a>
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}คำสัญญาของนักการเมือง - ระบบติดตามคำสัญญานักการเมือง{% endblock %}
+
+{% block header %}คำสัญญาของนักการเมือง{% endblock %}
+
+{% block content %}
+{% if politician %}
+<div class="promise-card">
+    <h2 style="color: #333; margin-bottom: 15px;">{{ politician.name }}</h2>
+    <p><strong>รหัสนักการเมือง:</strong> {{ politician.politician_id }}</p>
+    <p><strong>พรรคการเมือง:</strong> {{ politician.party }}</p>
+</div>
+
+<h3>คำสัญญาทั้งหมด ({{ promises|length }} คำสัญญา)</h3>
+
+{% if promises %}
+<table>
+    <thead>
+        <tr>
+            <th>รหัสคำสัญญา</th>
+            <th>รายละเอียด</th>
+            <th>วันที่ประกาศ</th>
+            <th>สถานะ</th>
+            <th>การดำเนินการ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for promise in promises %}
+        <tr>
+            <td>{{ promise.promise_id }}</td>
+            <td>{{ promise.description[:100] }}{% if promise.description|length > 100 %}...{% endif %}</td>
+            <td>{{ promise.announcement_date }}</td>
+            <td>
+                <span class="status-badge 
+                    {% if promise.status == 'ยังไม่เริ่ม' %}status-not-started
+                    {% elif promise.status == 'กำลังดำเนินการ' %}status-in-progress
+                    {% else %}status-silent{% endif %}">
+                    {{ promise.status }}
+                </span>
+            </td>
+            <td>
+                <a href="/promises/{{ promise.promise_id }}" class="btn">ดูรายละเอียด</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="text-align: center; color: #666; padding: 40px;">นักการเมืองคนนี้ยังไม่มีคำสัญญาในระบบ</p>
+{% endif %}
+
+<div style="margin-top: 30px;">
+    <a href="/politicians" class="btn">กลับไปหน้านักการเมือง</a>
+</div>
+{% else %}
+<div class="alert alert-error">
+    ไม่พบข้อมูลนักการเมือง
+</div>
+<a href="/politicians" class="btn">กลับไปหน้านักการเมือง</a>
+{% endif %}
+{% endblock %}
+

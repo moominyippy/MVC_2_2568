@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}นักการเมือง - ระบบติดตามคำสัญญานักการเมือง{% endblock %}
+
+{% block header %}รายชื่อนักการเมือง{% endblock %}
+
+{% block content %}
+<p style="margin-bottom: 20px; color: #666;">เลือกนักการเมืองเพื่อดูคำสัญญาทั้งหมด</p>
+
+{% if politicians %}
+<table>
+    <thead>
+        <tr>
+            <th>รหัสนักการเมือง</th>
+            <th>ชื่อ</th>
+            <th>พรรคการเมือง</th>
+            <th>จำนวนคำสัญญา</th>
+            <th>การดำเนินการ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for politician in politicians %}
+        <tr>
+            <td>{{ politician.politician_id }}</td>
+            <td>{{ politician.name }}</td>
+            <td>{{ politician.party }}</td>
+            <td>{{ promise_counts.get(politician.politician_id, 0) }}</td>
+            <td>
+                <a href="/politicians/{{ politician.politician_id }}" class="btn">ดูคำสัญญา</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="text-align: center; color: #666; padding: 40px;">ยังไม่มีข้อมูลนักการเมืองในระบบ</p>
+{% endif %}
+{% endblock %}
+

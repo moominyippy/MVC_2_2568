@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}คำสัญญาทั้งหมด - ระบบติดตามคำสัญญานักการเมือง{% endblock %}
+
+{% block header %}คำสัญญาทั้งหมด{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <p style="margin: 0; color: #666;">
+        แสดงคำสัญญาทั้งหมดเรียงตามวันที่ประกาศ
+        {% if sort_order == 'desc' %}
+            (ล่าสุดก่อน)
+        {% else %}
+            (เก่าสุดก่อน)
+        {% endif %}
+    </p>
+    <form method="GET" action="/promises" style="display: inline-block;">
+        <label for="sort" style="margin-right: 10px; color: #666;">เรียงลำดับ:</label>
+        <select name="sort" id="sort" onchange="this.form.submit()" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+            <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>ล่าสุด</option>
+            <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>เก่าสุด</option>
+        </select>
+    </form>
+</div>
+
+{% if promises %}
+<table>
+    <thead>
+        <tr>
+            <th>รหัสคำสัญญา</th>
+            <th>นักการเมือง</th>
+            <th>รายละเอียด</th>
+            <th>วันที่ประกาศ</th>
+            <th>สถานะ</th>
+            <th>การดำเนินการ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for promise in promises %}
+        <tr>
+            <td>{{ promise.promise_id }}</td>
+            <td>
+                {% set politician = politicians.get(promise.politician_id) %}
+                {% if politician %}
+                    {{ politician.name }} ({{ politician.party }})
+                {% else %}
+                    ไม่พบข้อมูล
+                {% endif %}
+            </td>
+            <td>{{ promise.description[:100] }}{% if promise.description|length > 100 %}...{% endif %}</td>
+            <td>{{ promise.announcement_date }}</td>
+            <td>
+                <span class="status-badge 
+                    {% if promise.status == 'ยังไม่เริ่ม' %}status-not-started
+                    {% elif promise.status == 'กำลังดำเนินการ' %}status-in-progress
+                    {% else %}status-silent{% endif %}">
+                    {{ promise.status }}
+                </span>
+            </td>
+            <td>
+                <a href="/promises/{{ promise.promise_id }}" class="btn">ดูรายละเอียด</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="text-align: center; color: #666; padding: 40px;">ยังไม่มีคำสัญญาในระบบ</p>
+{% endif %}
+{% endblock %}
+
